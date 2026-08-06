@@ -15,7 +15,7 @@ The Forge app is typically **installed on the source Confluence site**. Target (
 
 ## Install and configure on another site
 
-Use these steps whenever you want to run the app against a different source/target pair (for example, moving from a sandbox to a customer site).
+Use these steps whenever you want to run the app against a different source/target pair (for example, moving from a sandbox to a customer site). You will first need to download all of the files in this repository.
 
 ### Prerequisites
 
@@ -25,13 +25,21 @@ Use these steps whenever you want to run the app against a different source/targ
 - An Atlassian account with permission to read attachments on the source site and create attachments on the target site
 - API tokens for those accounts ([create an API token](https://id.atlassian.com/manage-profile/security/api-tokens))
 
-### 1. Install dependencies
+### 1. Register app
+
+This will associate the app with your developer space, with a new app ID. First, open a CLI and navigate to the folder on your local computer where these files are stored. Then enter the command:
+
+```bash
+forge register attachment-sync
+```
+
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Allow egress to your Confluence hosts
+### 3. Allow egress to your Confluence hosts
 
 In `manifest.yml`, list every Confluence hostname the app will call (source and target):
 
@@ -46,12 +54,12 @@ permissions:
 
 Redeploy after changing egress hosts — Forge will not allow outbound calls to hosts that are not listed.
 
-### 3. Set Forge environment variables
+### 4. Set Forge environment variables
 
 Variables are **per environment** (`development`, `staging`, `production`). Setting them once for development does **not** copy them to production. After any variable change, you must `forge deploy` again for that environment.
 
 ```bash
-# Replace development with staging or production as needed (-e <env>)
+# Replace "development" on the next line with "staging" or "production" as needed (-e <env>)
 ENV=development
 
 forge variables set -e "$ENV" TARGET_SITE_URL "https://<your-target-site>.atlassian.net"
@@ -76,7 +84,7 @@ forge variables set -e "$ENV" --encrypt TARGET_SITE_API_TOKEN "<target site API 
 
 If `SOURCE_SITE_URL`, `SOURCE_SITE_EMAIL`, and `SOURCE_SITE_API_TOKEN` are all set, the app reads source page metadata and attachments from that site over REST. Otherwise it uses Forge app identity (`asApp()`) on the installation site.
 
-### 4. Deploy and install
+### 5. Deploy and install
 
 ```bash
 # Development
@@ -90,17 +98,17 @@ forge install -e production --product Confluence --site https://<your-source-sit
 
 If the app is already installed on that site and you only changed code or variables, use `forge deploy` (and `forge install --upgrade` if scopes/egress changed).
 
-### 5. Create the web trigger URL
+### 6. Create the web trigger URL
 
 ```bash
 forge webtrigger create --functionKey sync-web-trigger
 ```
 
-Select the installation (site + Confluence + environment). Save the URL — you will paste it into Automation.
+Select the installation (site + Confluence + environment). Save the URL **and** the secret — you will paste them into Automation.
 
 You can list existing URLs with `forge webtrigger list`.
 
-### 6. Configure Atlassian Automation on the source site
+### 7. Configure Atlassian Automation on the source site
 
 On the **source** Confluence site, create an Automation rule, for example:
 
@@ -131,7 +139,7 @@ On the **source** Confluence site, create an Automation rule, for example:
 
 `WEB_TRIGGER_SECRET` must match the bearer token (or `x-sync-secret` header). Requests without a valid secret receive `401`/`403`.
 
-### 7. Prepare matching pages on the target site
+### 8. Prepare matching pages on the target site
 
 Target matching is by **exact page title + space name** (case-insensitive). Before syncing:
 
