@@ -1,0 +1,54 @@
+{
+  "name": "my-ui-kit-app",
+  "version": "0.0.1",
+  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint src",
+    "lint:fix": "ESLINT_USE_FLAT_CONFIG=true eslint src --fix",
+    "type-check": "tsc --noEmit",
+    "validate:manifest": "node .manifest-rules/dist/cli.js",
+    "security": "semgrep scan --config .semgrep.yml --severity ERROR --error --metrics off --quiet src",
+    "security:advisory": "semgrep scan --config .semgrep.yml --metrics off --quiet src || true",
+    "ci": "npm run validate:manifest && forge lint && (npm run type-check || (echo 'HINT: If you have type errors with component props, check src/types/forge-ui-types.ts for valid prop types and values' && exit 1)) && npm run test -- --coverage && npm run lint && npm run security"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@forge/testing-framework": "file:.testing-framework",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "24.1.0",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.6.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@forge/api": "7.2.2",
+    "@forge/bridge": "5.17.0",
+    "@forge/kvs": "1.6.5",
+    "@forge/react": "11.17.0",
+    "@forge/resolver": "1.8.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "13.0.2"
+  },
+  "overrides": {
+    "@atlaskit/tokens": "13.4.0"
+  }
+}
